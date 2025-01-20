@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { Sidebar, SidebarBody, SidebarLink } from "@/components/ui/sidebar";
-import { LayoutDashboard, UserCog, Settings, LogOut } from "lucide-react";
+import { LayoutDashboard, UserCog, Settings, LogOut, MessagesSquare } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 export function AppSidebar() {
-  const links = [
+  const mainLinks = [
     {
       label: "Dashboard",
       href: "/",
@@ -14,6 +14,16 @@ export function AppSidebar() {
         <LayoutDashboard className="text-neutral-700 dark:text-neutral-200 h-4 w-4 flex-shrink-0" />
       ),
     },
+    {
+      label: "Chat History",
+      href: "/chat-history",
+      icon: (
+        <MessagesSquare className="text-neutral-700 dark:text-neutral-200 h-4 w-4 flex-shrink-0" />
+      ),
+    },
+  ];
+
+  const bottomLinks = [
     {
       label: "Profile",
       href: "/profile",
@@ -36,14 +46,26 @@ export function AppSidebar() {
       ),
     },
   ];
+
   const [open, setOpen] = useState(false);
+  
   return (
     <Sidebar open={open} setOpen={setOpen}>
       <SidebarBody className="flex flex-col h-screen py-4">
-        <div className="flex flex-col flex-1 overflow-y-auto">
+        <div className="flex flex-col flex-1">
+          {/* Logo Section */}
           {open ? <Logo /> : <LogoIcon />}
+          
+          {/* Main Links Section */}
           <div className="mt-6 flex flex-col gap-1.5">
-            {links.map((link, idx) => (
+            {mainLinks.map((link, idx) => (
+              <SidebarLink key={idx} link={link} />
+            ))}
+          </div>
+
+          {/* Bottom Links Section */}
+          <div className="mt-auto pt-4 border-t border-neutral-200 dark:border-neutral-700">
+            {bottomLinks.map((link, idx) => (
               <SidebarLink key={idx} link={link} />
             ))}
           </div>
