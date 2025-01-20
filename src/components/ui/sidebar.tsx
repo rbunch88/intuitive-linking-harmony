@@ -93,7 +93,7 @@ const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
         className
       )}
       animate={{
-        width: animate ? (open ? "300px" : "60px") : "300px",
+        width: animate ? (open ? 300 : 60) : 300,
       }}
       onMouseEnter={() => setOpen(true)}
       onMouseLeave={() => setOpen(false)}
