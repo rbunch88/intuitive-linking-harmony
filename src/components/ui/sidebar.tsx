@@ -75,12 +75,17 @@ export const SidebarBody = (props: HTMLMotionProps<"div">) => {
   );
 };
 
-const DesktopSidebar = ({
+interface DesktopSidebarProps extends HTMLMotionProps<"div"> {
+  className?: string;
+}
+
+const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
   className,
   children,
   ...props
-}: HTMLMotionProps<"div">) => {
+}) => {
   const { open, setOpen, animate } = useSidebar();
+  
   return (
     <motion.div
       className={cn(
@@ -103,12 +108,13 @@ interface MobileSidebarProps extends HTMLMotionProps<"div"> {
   className?: string;
 }
 
-const MobileSidebar = ({
+const MobileSidebar: React.FC<MobileSidebarProps> = ({
   className,
   children,
   ...props
-}: MobileSidebarProps) => {
+}) => {
   const { open, setOpen } = useSidebar();
+  
   return (
     <>
       <div
