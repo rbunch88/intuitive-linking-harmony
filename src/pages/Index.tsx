@@ -1,22 +1,53 @@
 import { motion } from "framer-motion";
-import { Settings2, Image, FileText, RotateCcw, X } from "lucide-react";
+import { Settings2, Image, FileText, RotateCcw, X, Link as LinkIcon, Camera, FileImage } from "lucide-react";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+
+interface WritingStyle {
+  id: string;
+  name: string;
+  description: string;
+}
+
+const defaultStyles: WritingStyle[] = [
+  { id: "default", name: "Normal", description: "Default responses from Claude" },
+  { id: "concise", name: "Concise", description: "Brief and to the point" },
+  { id: "explanatory", name: "Explanatory", description: "Detailed explanations" },
+  { id: "formal", name: "Formal", description: "Professional and formal tone" },
+  { id: "storyteller", name: "Intellectual Storyteller", description: "Engaging narrative style" },
+  { id: "sales", name: "Sales Catalyst", description: "Persuasive and action-oriented" },
+];
 
 const Index = () => {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<Array<{ role: "user" | "assistant"; content: string }>>([]);
-  const [writingStyle, setWritingStyle] = useState("default");
+  const [writingStyle, setWritingStyle] = useState<WritingStyle>(defaultStyles[0]);
+  const [styles, setStyles] = useState<WritingStyle[]>(defaultStyles);
+  const [newStyle, setNewStyle] = useState<Partial<WritingStyle>>({ name: "", description: "" });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!message.trim()) return;
     
     setMessages(prev => [...prev, { role: "user", content: message }]);
-    // Simulate AI response
     setTimeout(() => {
       setMessages(prev => [...prev, { 
         role: "assistant", 
@@ -24,6 +55,18 @@ const Index = () => {
       }]);
     }, 1000);
     setMessage("");
+  };
+
+  const handleAddStyle = () => {
+    if (newStyle.name && newStyle.description) {
+      const style: WritingStyle = {
+        id: newStyle.name.toLowerCase().replace(/\s+/g, '-'),
+        name: newStyle.name,
+        description: newStyle.description,
+      };
+      setStyles(prev => [...prev, style]);
+      setNewStyle({ name: "", description: "" });
+    }
   };
 
   return (
@@ -42,44 +85,15 @@ const Index = () => {
       {/* Main Chat Area */}
       <main className="flex-1 overflow-auto p-4 space-y-6">
         {/* Welcome Message */}
-        <div className="flex items-center space-x-2 text-4xl font-light">
+        <div className="flex items-center space-x-3">
           <motion.div
-            initial={{ rotate: 0 }}
             animate={{ rotate: 360 }}
             transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-            className="w-8 h-8"
+            className="w-6 h-6 text-orange-400"
           >
-            <div className="w-full h-full rounded-full border-2 border-primary border-t-transparent" />
+            ✱
           </motion.div>
-          <h2>Good afternoon</h2>
-        </div>
-
-        {/* Writing Style Selection */}
-        <div className="max-w-2xl mx-auto bg-muted/50 rounded-lg p-6">
-          <h3 className="text-lg font-medium mb-4">Choose writing style</h3>
-          <RadioGroup
-            defaultValue="default"
-            value={writingStyle}
-            onValueChange={setWritingStyle}
-            className="grid grid-cols-1 md:grid-cols-3 gap-4"
-          >
-            {[
-              { value: "default", label: "Default", description: "Clear and direct communication" },
-              { value: "casual", label: "Casual", description: "Friendly and conversational" },
-              { value: "professional", label: "Professional", description: "Formal and business-like" },
-              { value: "academic", label: "Academic", description: "Scholarly and research-oriented" },
-              { value: "creative", label: "Creative", description: "Imaginative and expressive" },
-              { value: "technical", label: "Technical", description: "Precise and detailed" },
-            ].map((style) => (
-              <div key={style.value} className="flex items-start space-x-3 p-4 rounded-lg bg-background hover:bg-accent cursor-pointer">
-                <RadioGroupItem value={style.value} id={style.value} className="mt-1" />
-                <Label htmlFor={style.value} className="flex-1 cursor-pointer">
-                  <div className="font-medium mb-1">{style.label}</div>
-                  <div className="text-sm text-muted-foreground">{style.description}</div>
-                </Label>
-              </div>
-            ))}
-          </RadioGroup>
+          <h2 className="text-4xl font-light">Good afternoon</h2>
         </div>
 
         {/* Messages */}
@@ -97,43 +111,109 @@ const Index = () => {
       </main>
 
       {/* Input Area */}
-      <footer className="p-4 border-t">
-        <form onSubmit={handleSubmit} className="max-w-4xl mx-auto">
-          <div className="relative">
-            <Input
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              placeholder="How can Claude help you today?"
-              className="w-full pl-4 pr-20 py-3 rounded-lg"
-            />
-            <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center space-x-2">
-              <Button type="button" variant="ghost" size="icon">
-                <Image className="h-5 w-5" />
-              </Button>
-              <Button type="button" variant="ghost" size="icon">
-                <FileText className="h-5 w-5" />
-              </Button>
+      <footer className="border-t bg-muted/50">
+        <form onSubmit={handleSubmit} className="max-w-4xl mx-auto p-4">
+          <div className="space-y-4">
+            {/* Input with Tools */}
+            <div className="relative bg-background rounded-lg border">
+              <Textarea
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                placeholder="How can Claude help you today?"
+                className="min-h-[100px] p-4 pr-24 resize-none"
+              />
+              <div className="absolute right-2 bottom-2 flex items-center space-x-2">
+                <Button type="button" variant="ghost" size="icon" className="text-muted-foreground">
+                  <LinkIcon className="h-5 w-5" />
+                </Button>
+                <Button type="button" variant="ghost" size="icon" className="text-muted-foreground">
+                  <Camera className="h-5 w-5" />
+                </Button>
+                <Button type="button" variant="ghost" size="icon" className="text-muted-foreground">
+                  <FileImage className="h-5 w-5" />
+                </Button>
+              </div>
             </div>
-          </div>
-          
-          {/* Quick Actions */}
-          <div className="mt-4 flex items-center space-x-4 overflow-x-auto pb-2">
-            <Button variant="secondary">
-              Provide stakeholder perspective
-            </Button>
-            <Button variant="secondary">
-              Extract insights from report
-            </Button>
-            <Button variant="secondary">
-              Polish your prose
-            </Button>
-            <div className="flex-1" />
-            <Button variant="ghost" size="icon">
-              <RotateCcw className="h-5 w-5" />
-            </Button>
-            <Button variant="ghost" size="icon">
-              <X className="h-5 w-5" />
-            </Button>
+
+            {/* Writing Style and Actions */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" className="gap-2">
+                      <span>Choose style</span>
+                      <span className="text-muted-foreground">▼</span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start" className="w-56">
+                    {styles.map((style) => (
+                      <DropdownMenuItem
+                        key={style.id}
+                        onClick={() => setWritingStyle(style)}
+                        className="flex flex-col items-start"
+                      >
+                        <span className="font-medium">{style.name}</span>
+                        <span className="text-sm text-muted-foreground">{style.description}</span>
+                      </DropdownMenuItem>
+                    ))}
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button variant="ghost" className="w-full justify-start">
+                          Create & Edit Styles
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Create New Writing Style</DialogTitle>
+                          <DialogDescription>
+                            Add a new writing style to customize Claude's responses
+                          </DialogDescription>
+                        </DialogHeader>
+                        <div className="space-y-4">
+                          <div>
+                            <Label htmlFor="name">Style Name</Label>
+                            <Input
+                              id="name"
+                              value={newStyle.name}
+                              onChange={(e) => setNewStyle(prev => ({ ...prev, name: e.target.value }))}
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="description">Description</Label>
+                            <Input
+                              id="description"
+                              value={newStyle.description}
+                              onChange={(e) => setNewStyle(prev => ({ ...prev, description: e.target.value }))}
+                            />
+                          </div>
+                        </div>
+                        <DialogFooter>
+                          <Button onClick={handleAddStyle}>Add Style</Button>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <Button variant="secondary" size="sm">
+                  Provide stakeholder perspective
+                </Button>
+                <Button variant="secondary" size="sm">
+                  Extract insights from report
+                </Button>
+                <Button variant="secondary" size="sm">
+                  Polish your prose
+                </Button>
+                <Button variant="ghost" size="icon">
+                  <RotateCcw className="h-5 w-5" />
+                </Button>
+                <Button variant="ghost" size="icon">
+                  <X className="h-5 w-5" />
+                </Button>
+              </div>
+            </div>
           </div>
         </form>
       </footer>
