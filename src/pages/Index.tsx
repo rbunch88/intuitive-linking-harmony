@@ -1,7 +1,5 @@
 import { motion } from "framer-motion";
-import { Settings2 } from "lucide-react";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { WritingStyleSelector } from "@/components/chat/WritingStyleSelector";
 import { MessageInput } from "@/components/chat/MessageInput";
 import { QuickActions } from "@/components/chat/QuickActions";
@@ -49,16 +47,6 @@ const Index = () => {
 
   return (
     <div className="flex flex-col h-[calc(100vh-2rem)] md:h-screen bg-background text-foreground">
-      <header className="flex justify-between items-center p-2 sm:p-4 border-b">
-        <h1 className="text-lg sm:text-xl font-semibold">Claude</h1>
-        <div className="flex items-center gap-2">
-          <span className="text-primary hidden sm:inline">Professional Plan</span>
-          <Button variant="ghost" size="icon" className="h-8 w-8 sm:h-9 sm:w-9">
-            <Settings2 className="h-4 w-4 sm:h-5 sm:w-5" />
-          </Button>
-        </div>
-      </header>
-
       <main className="flex-1 overflow-auto p-2 sm:p-4 space-y-3 sm:space-y-6">
         <div className="flex items-center gap-2 sm:gap-3">
           <motion.div
