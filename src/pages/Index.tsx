@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface WritingStyle {
   id: string;
@@ -42,6 +43,7 @@ const Index = () => {
   const [writingStyle, setWritingStyle] = useState<WritingStyle>(defaultStyles[0]);
   const [styles, setStyles] = useState<WritingStyle[]>(defaultStyles);
   const [newStyle, setNewStyle] = useState<Partial<WritingStyle>>({ name: "", description: "" });
+  const isMobile = useIsMobile();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -75,7 +77,7 @@ const Index = () => {
       <header className="flex justify-between items-center p-4 border-b">
         <h1 className="text-xl font-semibold">Claude</h1>
         <div className="flex items-center space-x-2">
-          <span className="text-primary">Professional Plan</span>
+          <span className="text-primary hidden sm:inline">Professional Plan</span>
           <Button variant="ghost" size="icon">
             <Settings2 className="h-5 w-5" />
           </Button>
@@ -83,7 +85,7 @@ const Index = () => {
       </header>
 
       {/* Main Chat Area */}
-      <main className="flex-1 overflow-auto p-4 space-y-6">
+      <main className="flex-1 overflow-auto p-2 sm:p-4 space-y-4 sm:space-y-6">
         {/* Welcome Message */}
         <div className="flex items-center space-x-3">
           <motion.div
@@ -93,14 +95,14 @@ const Index = () => {
           >
             ✱
           </motion.div>
-          <h2 className="text-4xl font-light">Good afternoon</h2>
+          <h2 className="text-2xl sm:text-4xl font-light">Good afternoon</h2>
         </div>
 
         {/* Messages */}
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           {messages.map((msg, index) => (
             <div key={index} className={`flex ${msg.role === "assistant" ? "justify-start" : "justify-end"}`}>
-              <div className={`max-w-2xl p-4 rounded-lg ${
+              <div className={`max-w-[85%] sm:max-w-2xl p-3 sm:p-4 rounded-lg ${
                 msg.role === "assistant" ? "bg-muted" : "bg-primary text-primary-foreground"
               }`}>
                 {msg.content}
@@ -112,35 +114,35 @@ const Index = () => {
 
       {/* Input Area */}
       <footer className="border-t bg-muted/50">
-        <form onSubmit={handleSubmit} className="max-w-4xl mx-auto p-4">
-          <div className="space-y-4">
+        <form onSubmit={handleSubmit} className="max-w-4xl mx-auto p-2 sm:p-4">
+          <div className="space-y-3 sm:space-y-4">
             {/* Input with Tools */}
             <div className="relative bg-background rounded-lg border">
               <Textarea
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 placeholder="How can Claude help you today?"
-                className="min-h-[100px] p-4 pr-24 resize-none"
+                className="min-h-[80px] sm:min-h-[100px] p-3 sm:p-4 pr-20 sm:pr-24 resize-none"
               />
-              <div className="absolute right-2 bottom-2 flex items-center space-x-2">
-                <Button type="button" variant="ghost" size="icon" className="text-muted-foreground">
-                  <LinkIcon className="h-5 w-5" />
+              <div className="absolute right-2 bottom-2 flex items-center space-x-1 sm:space-x-2">
+                <Button type="button" variant="ghost" size={isMobile ? "sm" : "icon"} className="text-muted-foreground">
+                  <LinkIcon className="h-4 w-4 sm:h-5 sm:w-5" />
                 </Button>
-                <Button type="button" variant="ghost" size="icon" className="text-muted-foreground">
-                  <Camera className="h-5 w-5" />
+                <Button type="button" variant="ghost" size={isMobile ? "sm" : "icon"} className="text-muted-foreground">
+                  <Camera className="h-4 w-4 sm:h-5 sm:w-5" />
                 </Button>
-                <Button type="button" variant="ghost" size="icon" className="text-muted-foreground">
-                  <FileImage className="h-5 w-5" />
+                <Button type="button" variant="ghost" size={isMobile ? "sm" : "icon"} className="text-muted-foreground">
+                  <FileImage className="h-4 w-4 sm:h-5 sm:w-5" />
                 </Button>
               </div>
             </div>
 
             {/* Writing Style and Actions */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
+              <div className="flex items-center space-x-2 w-full sm:w-auto">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="gap-2">
+                    <Button variant="outline" className="gap-2 w-full sm:w-auto">
                       <span>Choose style</span>
                       <span className="text-muted-foreground">▼</span>
                     </Button>
@@ -196,20 +198,20 @@ const Index = () => {
                 </DropdownMenu>
               </div>
 
-              <div className="flex items-center space-x-2">
-                <Button variant="secondary" size="sm">
-                  Provide stakeholder perspective
+              <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full sm:w-auto">
+                <Button variant="secondary" size="sm" className="flex-1 sm:flex-none whitespace-nowrap">
+                  Stakeholder view
                 </Button>
-                <Button variant="secondary" size="sm">
-                  Extract insights from report
+                <Button variant="secondary" size="sm" className="flex-1 sm:flex-none whitespace-nowrap">
+                  Extract insights
                 </Button>
-                <Button variant="secondary" size="sm">
-                  Polish your prose
+                <Button variant="secondary" size="sm" className="flex-1 sm:flex-none whitespace-nowrap">
+                  Polish prose
                 </Button>
-                <Button variant="ghost" size="icon">
+                <Button variant="ghost" size="icon" className="hidden sm:inline-flex">
                   <RotateCcw className="h-5 w-5" />
                 </Button>
-                <Button variant="ghost" size="icon">
+                <Button variant="ghost" size="icon" className="hidden sm:inline-flex">
                   <X className="h-5 w-5" />
                 </Button>
               </div>
