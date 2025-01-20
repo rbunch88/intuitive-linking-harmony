@@ -1,5 +1,5 @@
 import * as React from "react";
-import { motion, AnimatePresence, PanInfo } from "framer-motion";
+import { motion, AnimatePresence, PanInfo, HTMLMotionProps } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Menu, X } from "lucide-react";
@@ -66,7 +66,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ children, open, setOpen, anima
   );
 };
 
-export const SidebarBody = (props: React.ComponentProps<typeof motion.div>) => {
+export const SidebarBody = (props: HTMLMotionProps<"div">) => {
   return (
     <>
       <DesktopSidebar {...props} />
@@ -79,7 +79,7 @@ const DesktopSidebar = ({
   className,
   children,
   ...props
-}: React.ComponentProps<typeof motion.div>) => {
+}: HTMLMotionProps<"div">) => {
   const { open, setOpen, animate } = useSidebar();
   return (
     <motion.div
@@ -99,9 +99,8 @@ const DesktopSidebar = ({
   );
 };
 
-interface MobileSidebarProps extends React.HTMLAttributes<HTMLDivElement> {
+interface MobileSidebarProps extends HTMLMotionProps<"div"> {
   className?: string;
-  children?: React.ReactNode;
 }
 
 const MobileSidebar: React.FC<MobileSidebarProps> = ({
